@@ -7,14 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using RocketLeagueWinLossApplication.src;
 
 
 namespace RocketLeagueWinLossApplication
 {
     public partial class Form1 : Form
     {
-        private int winCount, lossCount, difference;
-        private double winLossRatio;
+
+        private MatchHistory matchHistory;
 
         public Form1()
         {
@@ -22,10 +23,8 @@ namespace RocketLeagueWinLossApplication
             InitializeComponent();
 
             //variable initializers
-            winCount = 0;
-            lossCount = 0;
-            difference = 0;
-            winLossRatio = 0.0;
+            matchHistory = new MatchHistory();
+
 
             //method calls
             updateAll();
@@ -36,87 +35,56 @@ namespace RocketLeagueWinLossApplication
 
         }
 
-        private void SetDifferenceLabel(int difference)
+        //text setters
+        private void SetDifferenceLabel()
         {
-            DifferenceLabel.Text = difference.ToString();
+            DifferenceLabel.Text = matchHistory.getDifference().ToString();
         }
 
-        private void SetWinCount(int numberOfWins)
+        private void SetWinCount()
         {
-            WinCountLabel.Text = numberOfWins.ToString();
+            WinCountLabel.Text = matchHistory.getNumberOfWins().ToString();
         }
 
-        private void SetLossCount(int numberOfLosses)
+        private void SetLossCount()
         {
-            LossCountLabel.Text = numberOfLosses.ToString();
+            LossCountLabel.Text = matchHistory.getNumberOfLosses().ToString();
         }
 
-        private void SetRatioLabel(double wLRatio)
+        private void SetRatioLabel()
         {           
-            RatioLabel.Text = string.Format("{0:N2}%",wLRatio);
+            RatioLabel.Text = string.Format("{0:N2}%",matchHistory.getWinLossRatio());
         }
 
-        private void updateWinLossRatio()
-        {
-            try
-            {
-                winLossRatio = (double)winCount / (double)lossCount;
-            }
-            catch (DivideByZeroException)
-            {
-                winLossRatio = (double)winCount;
-            }
-            
-            SetRatioLabel(winLossRatio);            
-        }
-
-        private void updateDifference()
-        {
-            difference = winCount - lossCount;
-            SetDifferenceLabel(difference);
-        }
-
-        private void incrementWinCount()
-        {
-            winCount++;
-            updateAll();
-        }
-
-        private void incrementLossCount()
-        {
-            lossCount++;
-            updateAll();
-        }
-
-        private void ResetAndUpdateStats()
-        {
-            winCount = 0;
-            lossCount = 0;
-            updateAll();
-        }
-
+        //updates all labels and button text's *needs to be called every time a button that changes stats is called*
         private void updateAll()
         {
-            SetWinCount(winCount);
-            SetLossCount(lossCount);
-            updateWinLossRatio();
-            updateDifference();
+            SetWinCount();
+            SetLossCount();
+            SetRatioLabel();
+            SetDifferenceLabel();
+            //updateWinLossRatio();
+            //updateDifference();
         }
 
+        //event handlers
         private void WinButton_Click(object sender, EventArgs e)
         {
-            incrementWinCount();
+            matchHistory.incrementWinCount();
+            updateAll();
         }
 
         private void LossButton_Click(object sender, EventArgs e)
         {
-            incrementLossCount();
+            matchHistory.incrementLossCount();
+            updateAll();
         }
 
         //Reset button forgot to change the name
         private void ResetButton_Click(object sender, EventArgs e)
         {
-            ResetAndUpdateStats();
+            matchHistory.ResetAndUpdateStats();
+            updateAll();
         }
 
         private void Form1_Load(object sender, EventArgs e)
